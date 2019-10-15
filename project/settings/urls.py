@@ -15,7 +15,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from bots.views import confirmation_code
+from project.bots.views import confirmation_code
 
 urlpatterns = [
     path('admin/', admin.site.urls),
