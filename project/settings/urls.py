@@ -15,9 +15,9 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from project.bots.views import confirmation_code
+from project.bots.views import entrypoint
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/bot/confirmation_code', confirmation_code),
+    path('api/entrypoint', entrypoint),
 ]
