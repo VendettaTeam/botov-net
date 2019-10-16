@@ -18,9 +18,19 @@ def entrypoint(request):
         try:
             request_group_id = json_data['group_id']
             request_type = json_data['type']
+            secret_key = json_data['secret']
+
+            group = BotModel.objects.get(group_id=request_group_id)
+
+            # validate request
+            if not group:
+                return HttpResponseServerError("Group is not found")
+
+            if secret_key != group.secret_key:
+                return HttpResponseServerError("Secret is invalid")
 
             if request_type == "confirmation":
-                return confirmation_code(request_group_id)
+                return confirmation_code(group)
 
             return HttpResponseServerError("Request type is invalid")
 
@@ -30,6 +40,7 @@ def entrypoint(request):
         return HttpResponseNotAllowed("Method not allowed")
 
 
-def confirmation_code(group_id):
-    group = BotModel.objects.get(group_id=group_id)
+def confirmation_code(group):
+    group.is_confirmed = True
+    group.save()
     return HttpResponse(group.confirm_code)
