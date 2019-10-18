@@ -62,7 +62,7 @@ def echo_bot(request_json, group):
     vk = vk_session.get_api()
 
     vk.messages.send(
-        message=request_json['object']['body'],
+        message=request_json['object']['text'],
         random_id=get_random_id(),
-        peer_id=request_json['object']['user_id']
+        peer_id=request_json['object']['peer_id']
     )
