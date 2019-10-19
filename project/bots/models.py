@@ -8,3 +8,4 @@ class BotModel(models.Model):
     group_id = models.BigIntegerField(unique=True)
     secret_key = models.CharField(max_length=256, default='')
     is_confirmed = models.BooleanField(default=False)
+    names = models.TextField(null=True)
