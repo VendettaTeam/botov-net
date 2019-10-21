@@ -1,9 +1,13 @@
 import json, logging
+import vk_api
+from vk_api.utils import get_random_id
 from django.http import HttpResponse
 from django.http import HttpResponseServerError, HttpResponseNotAllowed
 from django.views.decorators.csrf import csrf_exempt
 from .models import BotModel
 from .decorators import vk_success_response
+from .tasks import save_to_elastic
+from .utils import is_appeal_to_bot, get_clean_message
 
 logger = logging.getLogger(__name__)
 
@@ -58,56 +62,15 @@ def echo_bot(request_json, bot_obj):
     if not is_appeal_to_bot(request_json, bot_obj):
         return
 
-    import vk_api
-    from vk_api.utils import get_random_id
+    save_to_elastic.delay(request_json, bot_obj.pk)
 
     vk_session = vk_api.VkApi(token=bot_obj.api_key)
     vk = vk_session.get_api()
 
     message = get_clean_message(request_json, bot_obj)
-    print(message)
-    if request_json['object']['text'] != "":
+    if message != "":
         vk.messages.send(
             message=message,
             random_id=get_random_id(),
             peer_id=request_json['object']['peer_id']
         )
-
-
-def is_appeal_to_bot(request_json, bot_obj):
-    if not is_chat(request_json):
-        return True
-    else:
-        for name in get_names(bot_obj):
-            if request_json['object']['text'].startswith(name):
-                return True, name
-
-    return False
-
-
-def get_names(bot_obj):
-    names = json.loads(bot_obj.names)
-    return sorted(names, key=len, reverse=True)
-
-
-def is_chat(request_json):
-    if request_json['object']['peer_id'] >= 2000000000:
-        return True
-    return False
-
-
-def get_clean_message(request_json, bot_obj):
-    """
-    Return message without bots name
-    :param request_json:
-    :param bot_obj:
-    :return:
-    """
-    message = request_json['object']['text']
-    if is_chat(request_json):
-        for name in get_names(bot_obj):
-            if message.startswith(name):
-                message = message[len(name):]
-                return message.strip(',')
-
-    return message
