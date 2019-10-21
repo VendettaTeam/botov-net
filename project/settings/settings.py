@@ -24,7 +24,7 @@ SECRET_KEY = 'knh8uzfa+)ih9oh$3aqkhz*^jry2#3^=22f6+c3zd1=&1^6@5@'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['46.242.38.21', '127.0.0.1']
+ALLOWED_HOSTS = ['46.242.38.21', '127.0.0.1', '94.253.114.63']
 
 # Application definition
 
@@ -106,8 +106,8 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 # Celery base setup
-CELERY_BROKER_URL = 'redis://127.0.0.1:6380'
-CELERY_RESULT_BACKEND = 'redis://127.0.0.1:6380'
+CELERY_BROKER_URL = 'redis://192.168.99.100:6380'
+CELERY_RESULT_BACKEND = 'redis://192.168.99.100:6380'
 
 
 import logging.config
