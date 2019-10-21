@@ -105,6 +105,11 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+# Celery base setup
+CELERY_BROKER_URL = 'redis://127.0.0.1:6380'
+CELERY_RESULT_BACKEND = 'redis://127.0.0.1:6380'
+
+
 import logging.config
 import os
 from django.utils.log import DEFAULT_LOGGING
