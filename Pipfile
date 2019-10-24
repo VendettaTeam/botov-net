@@ -12,6 +12,7 @@ vk-api = "*"
 celery = "*"
 elasticsearch = "*"
 redis = "*"
+geopy = "*"
 
 [requires]
 python_version = "3.7"
