@@ -16,23 +16,25 @@ def save_to_elastic(request_json, bot_obj_pk):
     :param bot_obj_pk:
     :return:
     """
-
     bot_obj = BotModel.objects.get(pk=bot_obj_pk)
-    # TODO logging this from logger
-    # print(request_json)
-    obj = dict()
-    obj['timestamp'] = datetime.now()
-    obj['bot_id'] = bot_obj.id
-    obj['text'] = request_json['object']['text']
-    obj['from_id'] = request_json['object']['from_id']
-    obj['is_chat'] = is_chat(request_json)
+    print(request_json)
+
+    obj = {
+        'timestamp': datetime.now(),
+        'bot_id': bot_obj.id,
+        'text': request_json['object']['text'],
+        'from_id': request_json['object']['from_id'],
+        'is_chat': is_chat(request_json)
+    }
+
     try:
         obj['user_info'] = get_vk_info_from_redis(request_json, bot_obj)
 
         es = Elasticsearch(hosts=os.environ['DJANGO_DOCKER_MACHINE_IP'])
-        es.index(index="test-index", body=obj)
+        es.index(index="my_index", body=obj)
         print(obj['user_info'])
     except Exception as e:
+        # TODO setup exception logging
         print(e)
 
 
@@ -45,8 +47,24 @@ def get_vk_info_from_redis(request_json, bot_obj):
         vk = vk_session.get_api()
 
         vk_info = vk.users.get(user_ids=request_json['object']['from_id'], fields="photo_50,city,verified")
+
+        location = get_geo_location(vk_info[0]['city']['title'])
+        if location:
+            vk_info[0]['city']['location'] = location
+
         r.set(prefix + str(request_json['object']['from_id']), json.dumps(vk_info))
 
         return vk_info
     else:
         return json.loads(vk_info)
+
+
+def get_geo_location(city_title):
+    try:
+        from geopy.geocoders import Nominatim
+        geolocator = Nominatim()
+        location = geolocator.geocode(city_title)
+
+        return str(location.latitude) + "," + str(location.longitude)
+    except:
+        return None

@@ -12,6 +12,7 @@ vk-api = "*"
 celery = "*"
 elasticsearch = "*"
 redis = "*"
+geopy = "*"
 eventlet = "*"
 django-environ = "*"
 
