@@ -13,6 +13,7 @@ celery = "*"
 elasticsearch = "*"
 redis = "*"
 eventlet = "*"
+django-environ = "*"
 
 [requires]
 python_version = "3.7"

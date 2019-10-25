@@ -1,4 +1,4 @@
-import vk_api, redis, json
+import vk_api, redis, json, os
 from celery import shared_task
 from datetime import datetime
 from elasticsearch import Elasticsearch
@@ -19,7 +19,7 @@ def save_to_elastic(request_json, bot_obj_pk):
 
     bot_obj = BotModel.objects.get(pk=bot_obj_pk)
     # TODO logging this from logger
-    #print(request_json)
+    # print(request_json)
     obj = dict()
     obj['timestamp'] = datetime.now()
     obj['bot_id'] = bot_obj.id
@@ -29,7 +29,7 @@ def save_to_elastic(request_json, bot_obj_pk):
     try:
         obj['user_info'] = get_vk_info_from_redis(request_json, bot_obj)
 
-        es = Elasticsearch(hosts="192.168.99.100")
+        es = Elasticsearch(hosts=os.environ['DJANGO_DOCKER_MACHINE_IP'])
         es.index(index="test-index", body=obj)
         print(obj['user_info'])
     except Exception as e:
@@ -38,7 +38,7 @@ def save_to_elastic(request_json, bot_obj_pk):
 
 def get_vk_info_from_redis(request_json, bot_obj):
     prefix = 'vk-'
-    r = redis.StrictRedis(host='192.168.99.100', port=6379, db=0)
+    r = redis.StrictRedis(host=os.environ['DJANGO_DOCKER_MACHINE_IP'], port=6379, db=0)
     vk_info = r.get(prefix + str(request_json['object']['from_id']))
     if vk_info is None:
         vk_session = vk_api.VkApi(token=bot_obj.api_key)
