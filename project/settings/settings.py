@@ -19,12 +19,12 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'knh8uzfa+)ih9oh$3aqkhz*^jry2#3^=22f6+c3zd1=&1^6@5@'
+SECRET_KEY = os.environ['DJANGO_SECRET_KEY']
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = True if (os.environ['DJANGO_PROJECT_DEBUG']).lower() in ("yes", "true", "1") else False
 
-ALLOWED_HOSTS = ['46.242.38.21', '127.0.0.1']
+ALLOWED_HOSTS = ['127.0.0.1', os.environ['DJANGO_CUSTOM_ALLOWED_HOSTS']]
 
 # Application definition
 
@@ -106,8 +106,8 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 # Celery base setup
-CELERY_BROKER_URL = 'redis://127.0.0.1:6380'
-CELERY_RESULT_BACKEND = 'redis://127.0.0.1:6380'
+CELERY_BROKER_URL = os.environ['DJANGO_CELERY_BROKER_URL']
+CELERY_RESULT_BACKEND = os.environ['DJANGO_CELERY_RESULT_BACKEND']
 
 
 import logging.config
