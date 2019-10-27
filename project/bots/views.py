@@ -8,6 +8,7 @@ from .models import BotModel
 from .decorators import vk_success_response
 from .tasks import save_to_elastic
 from .utils import is_appeal_to_bot, get_clean_message
+from .request import RequestInfo
 
 logger = logging.getLogger(__name__)
 
@@ -36,10 +37,11 @@ def entrypoint(request):
             if secret_key != bot_obj.secret_key:
                 return HttpResponseServerError("Secret is invalid")
 
+            request_info = RequestInfo(json_data, bot_obj)
             if request_type == "confirmation":
-                return confirmation_code(bot_obj)
+                return confirmation_code(request_info)
             elif request_type == "message_new":
-                return echo_bot(json_data, bot_obj)
+                return echo_bot(request_info)
 
             return HttpResponseServerError("Request type is invalid")
 
@@ -51,26 +53,26 @@ def entrypoint(request):
         return HttpResponseNotAllowed("Method not allowed")
 
 
-def confirmation_code(bot_obj):
-    bot_obj.is_confirmed = True
-    bot_obj.save()
-    return HttpResponse(bot_obj.confirm_code)
+def confirmation_code(request_info):
+    request_info.bot_obj.is_confirmed = True
+    request_info.bot_obj.save()
+    return HttpResponse(request_info.bot_obj.confirm_code)
 
 
 @vk_success_response
-def echo_bot(request_json, bot_obj):
-    if not is_appeal_to_bot(request_json, bot_obj):
+def echo_bot(request_info: RequestInfo):
+    if not is_appeal_to_bot(request_info):
         return
 
-    save_to_elastic.delay(request_json, bot_obj.pk)
+    save_to_elastic.delay(request_info.request, request_info.bot_obj.pk)
 
-    vk_session = vk_api.VkApi(token=bot_obj.api_key)
+    vk_session = vk_api.VkApi(token=request_info.bot_obj.api_key)
     vk = vk_session.get_api()
 
-    message = get_clean_message(request_json, bot_obj)
+    message = get_clean_message(request_info)
     if message != "":
         vk.messages.send(
             message=message,
             random_id=get_random_id(),
-            peer_id=request_json['object']['peer_id']
+            peer_id=request_info.request['object']['peer_id']
         )
