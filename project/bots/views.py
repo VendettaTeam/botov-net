@@ -1,14 +1,11 @@
 import json, logging
-import vk_api
-from vk_api.utils import get_random_id
 from django.http import HttpResponse
 from django.http import HttpResponseServerError, HttpResponseNotAllowed
 from django.views.decorators.csrf import csrf_exempt
 from .models import BotModel
 from .decorators import vk_success_response
-from .tasks import save_to_elastic
-from .utils import is_appeal_to_bot, get_clean_message
 from .request import RequestInfo
+from project.bots.response.echo_response import EchoResponse
 
 logger = logging.getLogger(__name__)
 
@@ -61,18 +58,8 @@ def confirmation_code(request_info):
 
 @vk_success_response
 def echo_bot(request_info: RequestInfo):
-    if not is_appeal_to_bot(request_info):
+    if not request_info.is_appeal_to_bot():
         return
 
-    save_to_elastic.delay(request_info.request, request_info.bot_obj.pk)
-
-    vk_session = vk_api.VkApi(token=request_info.bot_obj.api_key)
-    vk = vk_session.get_api()
-
-    message = get_clean_message(request_info)
-    if message != "":
-        vk.messages.send(
-            message=message,
-            random_id=get_random_id(),
-            peer_id=request_info.request['object']['peer_id']
-        )
+    bot_response = EchoResponse(request_info)
+    bot_response.run()
