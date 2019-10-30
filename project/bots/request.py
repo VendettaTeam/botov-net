@@ -8,6 +8,8 @@ class RequestInfo:
     """
 
     def __init__(self, request, bot_obj: BotModel):
+        self._check_request_structure(request)
+
         self.request = request
         self.bot_obj = bot_obj
         self.clean_message = self._get_clean_message()
@@ -22,7 +24,7 @@ class RequestInfo:
 
         return False
 
-    def _get_clean_message(self):
+    def _get_clean_message(self) -> str:
         """
         Return message without bots name
         :return:
@@ -32,6 +34,31 @@ class RequestInfo:
             for name in get_names(self.bot_obj):
                 if message.startswith(name):
                     message = message[len(name):]
-                    return message.strip(',')
+                    return message.strip(', ')
 
         return message
+
+    def _check_request_structure(self, request):
+        """
+        Example:
+            'type': 'message_new',
+            'object': {
+                'date': 1572381124,
+                'from_id': 41790945,
+                'id': 423,
+                'out': 0,
+                'peer_id': 41790945,
+                'text': 'hj',
+                'conversation_message_id': 419,
+                'fwd_messages': [],
+                'important': False,
+                'random_id': 0,
+                'attachments': [],
+                'is_hidden': False
+            },
+            'group_id': 187639144,
+            'secret': '123321'
+        """
+
+        assert request['type'] == 'message_new'
+        # TODO check another fields

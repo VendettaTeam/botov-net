@@ -5,7 +5,8 @@ from django.views.decorators.csrf import csrf_exempt
 from .models import BotModel
 from .decorators import vk_success_response
 from .request import RequestInfo
-from project.bots.response.echo_response import EchoResponse
+from project.bots.analyser.echo_analyser import EchoAnalyser
+from project.bots.analyser.hashmap_analyser import HashMapAnalyser
 
 logger = logging.getLogger(__name__)
 
@@ -38,7 +39,7 @@ def entrypoint(request):
             if request_type == "confirmation":
                 return confirmation_code(request_info)
             elif request_type == "message_new":
-                return echo_bot(request_info)
+                return hashmap_bot(request_info)
 
             return HttpResponseServerError("Request type is invalid")
 
@@ -61,5 +62,15 @@ def echo_bot(request_info: RequestInfo):
     if not request_info.is_appeal_to_bot():
         return
 
-    bot_response = EchoResponse(request_info)
+    analyser = EchoAnalyser(request_info)
+    bot_response = analyser.get_response()
+    bot_response.run()
+
+@vk_success_response
+def hashmap_bot(request_info: RequestInfo):
+    if not request_info.is_appeal_to_bot():
+        return
+
+    analyser = HashMapAnalyser(request_info)
+    bot_response = analyser.get_response()
     bot_response.run()
