@@ -14,7 +14,6 @@ elasticsearch = "*"
 redis = "*"
 geopy = "*"
 eventlet = "*"
-django-environ = "*"
 
 [requires]
 python_version = "3.7"

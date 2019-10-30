@@ -7,10 +7,10 @@ class BotResponse(ABC):
 
     def __init__(self, request_info: RequestInfo):
         self.request_info = request_info
-        self.setup()
-
-    def setup(self):
         save_to_elastic.delay(self.request_info.request, self.request_info.bot_obj.pk)
+
+    def setup(self, *args, **kwargs):
+        pass
 
     @abstractmethod
     def run(self):
