@@ -1,8 +1,10 @@
 version: '3.7'
 services:
   botov_elastic_search:
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.4.0
     container_name: botov_elastic_search
+    build:
+      context: ./
+      dockerfile: ./docker/elasticsearch/Dockerfile
     environment:
       - node.name=botov_elastic_search
       - cluster.initial_master_nodes=botov_elastic_search
@@ -13,8 +15,8 @@ services:
       memlock:
         soft: -1
         hard: -1
-    #    volumes:
-    #      - esdata01:/usr/share/elasticsearch/data
+    volumes:
+      - ./docker/elasticsearch/synonym.txt:/usr/share/elasticsearch/config/analysis/synonym.txt:ro
     ports:
       - 9200:9200
 

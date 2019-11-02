@@ -35,6 +35,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_extensions',
+    'django_elasticsearch_dsl',
     'rest_framework',
     'project.bots'
 ]
@@ -109,6 +111,11 @@ AUTH_PASSWORD_VALIDATORS = [
 CELERY_BROKER_URL = os.environ['DJANGO_CELERY_BROKER_URL']
 CELERY_RESULT_BACKEND = os.environ['DJANGO_CELERY_RESULT_BACKEND']
 
+ELASTICSEARCH_DSL = {
+    'default': {
+        'hosts': os.environ['DJANGO_DOCKER_MACHINE_IP'] + ':9200'
+    },
+}
 
 import logging.config
 import os
