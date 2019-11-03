@@ -38,3 +38,20 @@ class MessagesDocument(Document):
     class Django:
         model = Messages
         fields = ['id']
+
+
+class RequestsDocument(Document):
+    timestamp = fields.DateField()
+    bot_id = fields.LongField()
+    message = fields.TextField()
+    clean_message = fields.TextField()
+    from_id = fields.LongField()
+    is_chat = fields.BooleanField()
+
+    user_info = fields.ObjectField()
+    location = fields.GeoPoint()
+    bdate = fields.DateField()
+    sex = fields.IntegerField()
+
+    class Index:
+        name = 'requests'
