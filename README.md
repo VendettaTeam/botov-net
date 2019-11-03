@@ -8,6 +8,7 @@ cp .env.sample .env
 ./manage.py migrate
 docker-compose up --build
 ./manage.py runserver 0.0.0.0:8000
+./manage.py search_index --rebuild
 
 unix:
     celery worker -A project.settings

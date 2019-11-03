@@ -1,4 +1,4 @@
-import json, logging
+import os, json, logging
 from django.http import HttpResponse
 from django.http import HttpResponseServerError, HttpResponseNotAllowed
 from django.views.decorators.csrf import csrf_exempt
@@ -8,6 +8,7 @@ from .request import RequestInfo
 from project.bots.analyser.echo_analyser import EchoAnalyser
 from project.bots.analyser.hashmap_analyser import HashMapAnalyser
 from project.bots.analyser.elastic_analyser import ElasticAnalyser
+from project.bots.analyser.nothing_analyser import NothingAnalyser
 
 logger = logging.getLogger(__name__)
 
@@ -39,7 +40,11 @@ def entrypoint(request):
             if request_type == "confirmation":
                 return confirmation_code(bot_obj)
             elif request_type == "message_new":
-                return elasticsearch_bot(RequestInfo(json_data, bot_obj))
+                request_info = RequestInfo(json_data, bot_obj)
+                do_nothing = True if (os.environ['DJANGO_DO_NOTHING']).lower() in ("yes", "true", "1") else False
+                if do_nothing:
+                    return do_nothing_bot(request_info)
+                return elasticsearch_bot(request_info)
 
             return HttpResponseServerError("Request type is invalid")
 
@@ -84,4 +89,16 @@ def elasticsearch_bot(request_info: RequestInfo):
 
     analyser = ElasticAnalyser(request_info)
     bot_response = analyser.get_response()
+    bot_response.run()
+
+
+@vk_success_response
+def do_nothing_bot(request_info: RequestInfo):
+    if not request_info.is_appeal_to_bot():
+        return
+    analyser = NothingAnalyser(request_info)
+    try:
+        bot_response = analyser.get_response()
+    except Exception as e:
+        print(e)
     bot_response.run()
