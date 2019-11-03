@@ -1,7 +1,18 @@
 from django.contrib import admin
-
-# Register your models here.
+from django.contrib.postgres import fields
+from django_json_widget.widgets import JSONEditorWidget
 from .models import BotModel, Messages
 
-admin.site.register(BotModel)
-admin.site.register(Messages)
+
+@admin.register(BotModel)
+class YourModelAdmin(admin.ModelAdmin):
+    formfield_overrides = {
+        fields.JSONField: {'widget': JSONEditorWidget},
+    }
+
+
+@admin.register(Messages)
+class YourModelAdmin(admin.ModelAdmin):
+    formfield_overrides = {
+        fields.JSONField: {'widget': JSONEditorWidget},
+    }

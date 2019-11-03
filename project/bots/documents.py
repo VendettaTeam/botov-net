@@ -3,7 +3,7 @@ from django_elasticsearch_dsl.registries import registry
 from .models import Messages
 from elasticsearch_dsl import analyzer, token_filter
 
-ru_morphology = token_filter(
+ru_morphology_filter = token_filter(
     'ru_RU',
     type="hunspell",
     locale="ru_RU",
@@ -22,7 +22,7 @@ my_analyzer = analyzer(
     tokenizer="standard",
     filter=[
         "lowercase",
-        ru_morphology,
+        ru_morphology_filter,
         synonym_filter
     ],
 )

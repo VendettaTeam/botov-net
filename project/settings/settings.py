@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django_extensions',
     'django_elasticsearch_dsl',
+    'django_json_widget',
     'rest_framework',
     'project.bots'
 ]
@@ -84,8 +85,15 @@ WSGI_APPLICATION = 'project.settings.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        # 'ENGINE': 'django.db.backends.sqlite3',
+        # 'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'postgres',
+        'USER': 'postgres',
+        'PASSWORD': 'root',
+        'HOST': os.environ['DJANGO_DOCKER_MACHINE_IP'],
+        'PORT': '5432',
     }
 }
 

@@ -20,6 +20,14 @@ services:
     ports:
       - 9200:9200
 
+  botov_postgres:
+    container_name: botov_postgres
+    image: postgres
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_PASSWORD: root
+
   botov_kibana:
     image: docker.elastic.co/kibana/kibana:7.4.0
     container_name: botov_kibana
@@ -27,15 +35,11 @@ services:
       ELASTICSEARCH_HOSTS: http://botov_elastic_search:9200
     ports:
       - 5601:5601
+    depends_on:
+      - botov_elastic_search
 
   botov_redis:
     container_name: botov_redis
     image: redis:latest
     ports:
       - "6379:6379"
-
-  botov_redis_celery:
-    container_name: botov_redis_celery
-    image: redis:latest
-    ports:
-      - "6380:6379"
