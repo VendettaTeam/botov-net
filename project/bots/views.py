@@ -36,11 +36,10 @@ def entrypoint(request):
             if secret_key != bot_obj.secret_key:
                 return HttpResponseServerError("Secret is invalid")
 
-            request_info = RequestInfo(json_data, bot_obj)
             if request_type == "confirmation":
-                return confirmation_code(request_info)
+                return confirmation_code(bot_obj)
             elif request_type == "message_new":
-                return elasticsearch_bot(request_info)
+                return elasticsearch_bot(RequestInfo(json_data, bot_obj))
 
             return HttpResponseServerError("Request type is invalid")
 
@@ -52,10 +51,10 @@ def entrypoint(request):
         return HttpResponseNotAllowed("Method not allowed")
 
 
-def confirmation_code(request_info):
-    request_info.bot_obj.is_confirmed = True
-    request_info.bot_obj.save()
-    return HttpResponse(request_info.bot_obj.confirm_code)
+def confirmation_code(bot_obj):
+    bot_obj.is_confirmed = True
+    bot_obj.save()
+    return HttpResponse(bot_obj.confirm_code)
 
 
 @vk_success_response
@@ -67,6 +66,7 @@ def echo_bot(request_info: RequestInfo):
     bot_response = analyser.get_response()
     bot_response.run()
 
+
 @vk_success_response
 def hashmap_bot(request_info: RequestInfo):
     if not request_info.is_appeal_to_bot():
@@ -75,6 +75,7 @@ def hashmap_bot(request_info: RequestInfo):
     analyser = HashMapAnalyser(request_info)
     bot_response = analyser.get_response()
     bot_response.run()
+
 
 @vk_success_response
 def elasticsearch_bot(request_info: RequestInfo):

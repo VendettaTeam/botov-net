@@ -59,6 +59,5 @@ class RequestInfo:
             'group_id': 187639144,
             'secret': '123321'
         """
-
-        assert request['type'] == 'message_new'
+        assert request['type'] in ['message_new', 'confirmation']
         # TODO check another fields
