@@ -14,6 +14,10 @@ elasticsearch = "*"
 redis = "*"
 geopy = "*"
 eventlet = "*"
+psycopg2-binary = "*"
+django-extensions = "*"
+django-elasticsearch-dsl = "*"
+django-json-widget = "*"
 
 [requires]
 python_version = "3.7"

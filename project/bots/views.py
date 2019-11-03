@@ -7,6 +7,7 @@ from .decorators import vk_success_response
 from .request import RequestInfo
 from project.bots.analyser.echo_analyser import EchoAnalyser
 from project.bots.analyser.hashmap_analyser import HashMapAnalyser
+from project.bots.analyser.elastic_analyser import ElasticAnalyser
 
 logger = logging.getLogger(__name__)
 
@@ -39,7 +40,7 @@ def entrypoint(request):
             if request_type == "confirmation":
                 return confirmation_code(request_info)
             elif request_type == "message_new":
-                return hashmap_bot(request_info)
+                return elasticsearch_bot(request_info)
 
             return HttpResponseServerError("Request type is invalid")
 
@@ -72,5 +73,14 @@ def hashmap_bot(request_info: RequestInfo):
         return
 
     analyser = HashMapAnalyser(request_info)
+    bot_response = analyser.get_response()
+    bot_response.run()
+
+@vk_success_response
+def elasticsearch_bot(request_info: RequestInfo):
+    if not request_info.is_appeal_to_bot():
+        return
+
+    analyser = ElasticAnalyser(request_info)
     bot_response = analyser.get_response()
     bot_response.run()
