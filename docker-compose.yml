@@ -1,7 +1,7 @@
 version: '3.7'
 services:
-  botov_elastic_search:
-    container_name: botov_elastic_search
+  botov_elasticsearch:
+    container_name: botov_elasticsearch
     build:
       context: ./
       dockerfile: ./docker/elasticsearch/Dockerfile
@@ -17,12 +17,15 @@ services:
         hard: -1
     volumes:
       - ./docker/elasticsearch/synonym.txt:/usr/share/elasticsearch/config/analysis/synonym.txt:ro
+#      - ./docker/elasticsearch/data:/usr/share/elasticsearch/data
     ports:
       - 9200:9200
 
   botov_postgres:
     container_name: botov_postgres
     image: postgres
+    volumes:
+      - ./docker/postgres/data:/var/lib/postgresql/data
     ports:
       - 5432:5432
     environment:
@@ -32,14 +35,16 @@ services:
     image: docker.elastic.co/kibana/kibana:7.4.0
     container_name: botov_kibana
     environment:
-      ELASTICSEARCH_HOSTS: http://botov_elastic_search:9200
+      ELASTICSEARCH_HOSTS: http://botov_elasticsearch:9200
     ports:
       - 5601:5601
     depends_on:
-      - botov_elastic_search
+      - botov_elasticsearch
 
   botov_redis:
     container_name: botov_redis
     image: redis:latest
+    volumes:
+      - ./docker/redis/data:/data
     ports:
       - "6379:6379"
