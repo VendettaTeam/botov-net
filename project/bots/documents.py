@@ -42,6 +42,7 @@ class MessagesDocument(Document):
 
 class RequestsDocument(Document):
     timestamp = fields.DateField()
+    request_time = fields.DateField()
     bot_id = fields.LongField()
     message = fields.TextField()
     clean_message = fields.TextField()
@@ -51,6 +52,7 @@ class RequestsDocument(Document):
     user_info = fields.ObjectField()
     location = fields.GeoPoint()
     bdate = fields.DateField()
+    age = fields.IntegerField()
     sex = fields.IntegerField()
 
     class Index:

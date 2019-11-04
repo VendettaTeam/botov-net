@@ -1,6 +1,6 @@
 import vk_api, redis, json, os
 from celery import shared_task
-from datetime import datetime
+from datetime import datetime, date
 from .models import BotModel
 from .utils import is_chat
 from .request import RequestInfo
@@ -20,6 +20,7 @@ def save_to_elastic(request_json, bot_obj_pk):
         doc.init()
 
         doc.timestamp = datetime.now()
+        doc.request_time = datetime.utcfromtimestamp(request_info.request['object']['date'])
         doc.bot_id = bot_obj.id
         doc.message = request_info.request['object']['text']
         doc.clean_message = request_info.clean_message
@@ -27,8 +28,10 @@ def save_to_elastic(request_json, bot_obj_pk):
         doc.is_chat = is_chat(request_info.request)
 
         doc.user_info = vk_user_info
+        bdate = get_bdate(vk_user_info)
         doc.location = get_geo_location(vk_user_info)
-        doc.bdate = get_bdate(vk_user_info)
+        doc.bdate = bdate
+        doc.age = get_age(bdate)
         doc.sex = get_sex(vk_user_info)
 
         doc.save()
@@ -72,6 +75,14 @@ def get_bdate(vk_user_info):
         return None
     except:
         return None
+
+
+def get_age(born):
+    if born is None:
+        return None
+
+    today = date.today()
+    return today.year - born.year - ((today.month, today.day) < (born.month, born.day))
 
 
 def get_sex(vk_user_info):
