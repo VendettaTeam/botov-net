@@ -47,7 +47,9 @@ class RequestsDocument(Document):
     message = fields.TextField()
     clean_message = fields.TextField()
     from_id = fields.LongField()
+    peer_id = fields.LongField()
     is_chat = fields.BooleanField()
+    is_appeal = fields.BooleanField()
 
     user_info = fields.ObjectField()
     location = fields.GeoPoint()

@@ -25,7 +25,9 @@ def save_to_elastic(request_json, bot_obj_pk):
         doc.message = request_info.request['object']['text']
         doc.clean_message = request_info.clean_message
         doc.from_id = request_info.request['object']['from_id']
+        doc.peer_id = request_info.request['object']['peer_id']
         doc.is_chat = is_chat(request_info.request)
+        doc.is_appeal = request_info.is_appeal_to_bot()
 
         doc.user_info = vk_user_info
         bdate = get_bdate(vk_user_info)
