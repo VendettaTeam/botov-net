@@ -5,6 +5,7 @@ from django.views.decorators.csrf import csrf_exempt
 from .models import BotModel
 from .decorators import vk_success_response
 from .request import RequestInfo
+from project.bots.tasks import save_to_elastic
 from project.bots.analyser.echo_analyser import EchoAnalyser
 from project.bots.analyser.hashmap_analyser import HashMapAnalyser
 from project.bots.analyser.elastic_analyser import ElasticAnalyser
@@ -84,6 +85,8 @@ def hashmap_bot(request_info: RequestInfo):
 
 @vk_success_response
 def elasticsearch_bot(request_info: RequestInfo):
+    save_to_elastic.delay(request_info.request, request_info.bot_obj.pk)
+
     if not request_info.is_appeal_to_bot():
         return
 
@@ -94,11 +97,11 @@ def elasticsearch_bot(request_info: RequestInfo):
 
 @vk_success_response
 def do_nothing_bot(request_info: RequestInfo):
+    save_to_elastic.delay(request_info.request, request_info.bot_obj.pk)
+
     if not request_info.is_appeal_to_bot():
         return
+
     analyser = NothingAnalyser(request_info)
-    try:
-        bot_response = analyser.get_response()
-    except Exception as e:
-        print(e)
+    bot_response = analyser.get_response()
     bot_response.run()
