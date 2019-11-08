@@ -1,5 +1,5 @@
 from .utils import is_chat, get_names
-from .models import BotModel
+from .models import BotModel, UserInfo
 
 
 class RequestInfo:
@@ -12,6 +12,8 @@ class RequestInfo:
 
         self.request = request
         self.bot_obj = bot_obj
+        self.user_info = UserInfo.objects.get_or_create(vk_id=request['object']['from_id'])[0]
+
         self.clean_message = self._get_clean_message()
 
     def is_appeal_to_bot(self):
