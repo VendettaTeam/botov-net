@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.postgres.fields import JSONField
+from django.utils.timezone import now
 from project.bots.response.response_answer import ResponseAnswer
 
 
@@ -28,3 +29,15 @@ class Messages(models.Model):
 
     def __str__(self):
         return 'Message: ' + self.message
+
+
+class UserInfo(models.Model):
+    vk_id = models.BigIntegerField(unique=True)
+    coins = models.BigIntegerField(default=0)
+    vip_expire = models.DateTimeField(default=now)
+    date = models.DateTimeField(default=now)
+
+    def is_vip(self):
+        if self.vip_expire > now():
+            return True
+        return False
