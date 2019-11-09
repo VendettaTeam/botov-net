@@ -2,6 +2,7 @@ stages:
   - build
   - test
   - release
+  - deploy
 
 variables:
   DJANGO_TEST_IMAGE: $CI_REGISTRY_IMAGE:DJANGO_$CI_COMMIT_REF_SLUG
