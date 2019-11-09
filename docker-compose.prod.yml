@@ -19,6 +19,7 @@ services:
     container_name: botov_celery
     <<: *botov_backend
     command: "celery worker -A project.settings -l ERROR"
+    ports: []
     depends_on:
       - botov_redis
       - botov_elasticsearch
