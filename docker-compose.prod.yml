@@ -4,14 +4,14 @@ services:
   botov_backend: &botov_backend
     container_name: botov_backend_container
     image: registry.gitlab.com/vtr0n/botov-net:DJANGO_latest
-    command: "bash -c './manage.py migrate &&  ./manage.py search_index --rebuild -f && ./manage.py runserver 0.0.0.0:8000'"
+    command: "bash -c 'sleep 10 && ./manage.py migrate &&  ./manage.py search_index --rebuild -f && ./manage.py runserver 0.0.0.0:80'"
     env_file: .env
     restart: always
     ports:
-      - "80:8000"
+      - "80:80"
     depends_on:
-      - botov_elasticsearch
       - botov_postgres
+      - botov_elasticsearch
       - botov_redis
       - botov_celery
 
