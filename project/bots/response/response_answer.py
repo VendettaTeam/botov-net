@@ -22,6 +22,7 @@ class ResponseAnswer():
             {
                 'type': 'text_response',
                 'payload': {
+                    'attachment': '',
                     'text_response': 'value',
                 }
             }

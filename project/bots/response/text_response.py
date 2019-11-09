@@ -5,23 +5,23 @@ from .response_exception import ResponseException
 
 
 class TextResponse(BotResponse):
-    def setup(self, text_response=None, **payload):
-        if not text_response and 'text_response' not in payload:
+    def setup(self, *args, **kwargs):
+        if 'text_response' not in kwargs:
             raise ResponseException("No text_response field")
 
-        if 'text_response' not in payload:
-            self.text_response = text_response
-        else:
-            self.text_response = payload['text_response']
+        self.text_response = kwargs['text_response']
+        self.attachment = kwargs['attachment'] if 'attachment' in kwargs else None
 
     def run(self):
         vk_session = vk_api.VkApi(token=self.request_info.bot_obj.api_key)
         vk = vk_session.get_api()
 
         message = self.text_response
-        if message != "":
+        attachment = self.attachment
+        if message != "" or attachment != "":
             vk.messages.send(
                 message=message,
+                attachment=attachment,
                 random_id=get_random_id(),
                 peer_id=self.request_info.request['object']['peer_id']
             )

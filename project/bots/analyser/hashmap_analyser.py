@@ -15,7 +15,7 @@ class HashMapAnalyser(Analyser):
         print(self.request_info.clean_message.lower())
         answer = self.text.get(self.request_info.clean_message.lower())
         if answer:
-            bot_resp.setup(answer)
+            bot_resp.setup(text_response=answer)
         else:
             bot_resp.setup('Не найдено')
 
