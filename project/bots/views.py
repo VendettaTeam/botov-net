@@ -42,8 +42,7 @@ def entrypoint(request):
                 return confirmation_code(bot_obj)
             elif request_type == "message_new":
                 request_info = RequestInfo(json_data, bot_obj)
-                do_nothing = True if (os.environ['DJANGO_DO_NOTHING']).lower() in ("yes", "true", "1") else False
-                if do_nothing:
+                if not request_info.bot_obj.enable:
                     return do_nothing_bot(request_info)
                 return elasticsearch_bot(request_info)
 
