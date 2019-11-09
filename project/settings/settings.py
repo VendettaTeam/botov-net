@@ -92,7 +92,7 @@ DATABASES = {
         'NAME': 'postgres',
         'USER': 'postgres',
         'PASSWORD': 'root',
-        'HOST': os.environ['DJANGO_DOCKER_MACHINE_IP'],
+        'HOST': 'botov_postgres',
         'PORT': '5432',
     }
 }
@@ -116,12 +116,12 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 # Celery base setup
-CELERY_BROKER_URL = os.environ['DJANGO_CELERY_BROKER_URL']
-CELERY_RESULT_BACKEND = os.environ['DJANGO_CELERY_RESULT_BACKEND']
+CELERY_BROKER_URL = 'redis://botov_redis:6379'
+CELERY_RESULT_BACKEND = 'redis://botov_redis:6379'
 
 ELASTICSEARCH_DSL = {
     'default': {
-        'hosts': os.environ['DJANGO_DOCKER_MACHINE_IP'] + ':9200'
+        'hosts': 'botov_elasticsearch:9200'
     },
 }
 

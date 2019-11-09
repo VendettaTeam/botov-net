@@ -44,7 +44,7 @@ def save_to_elastic(request_json, bot_obj_pk):
 
 def get_user_info(request_info: RequestInfo):
     prefix = 'vk-'
-    redis_cache = redis.StrictRedis(host=os.environ['DJANGO_DOCKER_MACHINE_IP'], port=6379, db=0)
+    redis_cache = redis.StrictRedis(host='botov_redis', port=6379, db=0)
     vk_info = redis_cache.get(prefix + str(request_info.request['object']['from_id']))
     if vk_info is None:
         vk_session = vk_api.VkApi(token=request_info.bot_obj.api_key)
