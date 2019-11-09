@@ -1,5 +1,6 @@
 stages:
   - build
+  - release
 
 variables:
   DJANGO_TEST_IMAGE: $CI_REGISTRY_IMAGE:DJANGO_$CI_COMMIT_REF_SLUG
@@ -16,19 +17,19 @@ django-build:
     - docker build --pull -t $DJANGO_TEST_IMAGE . -f docker/django/Dockerfile
     - docker push $DJANGO_TEST_IMAGE
 
-#django-release-image:
-#  stage: release
-#  image: docker:stable
-#  services:
-#    - docker:stable-dind
-#  before_script:
-#    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
-#  script:
-#    - docker pull $DJANGO_TEST_IMAGE
-#    - docker tag $DJANGO_TEST_IMAGE $DJANGO_RELEASE_IMAGE
-#    - docker push $DJANGO_RELEASE_IMAGE
-#  only:
-#    - master
+django-release-image:
+  stage: release
+  image: docker:stable
+  services:
+    - docker:stable-dind
+  before_script:
+    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
+  script:
+    - docker pull $DJANGO_TEST_IMAGE
+    - docker tag $DJANGO_TEST_IMAGE $DJANGO_RELEASE_IMAGE
+    - docker push $DJANGO_RELEASE_IMAGE
+  only:
+    - master
 #
 #deploy:
 #  stage: deploy
