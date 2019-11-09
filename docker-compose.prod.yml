@@ -1,0 +1,76 @@
+version: '3.7'
+services:
+
+  botov_backend: &botov_backend
+    container_name: botov_backend_container
+    image: registry.gitlab.com/vtr0n/botov-net:DJANGO_latest
+    command: "bash -c './manage.py migrate &&  ./manage.py search_index --rebuild -f && ./manage.py runserver 0.0.0.0:80'"
+    env_file: .env
+    restart: always
+    ports:
+      - "80:8000"
+    depends_on:
+      - botov_elasticsearch
+      - botov_postgres
+      - botov_redis
+      - botov_celery
+
+  botov_celery:
+    container_name: botov_celery
+    <<: *botov_backend
+    command: "celery worker -A project.settings -l ERROR"
+    depends_on:
+      - botov_redis
+      - botov_elasticsearch
+
+  botov_elasticsearch:
+    container_name: botov_elasticsearch
+    build:
+      context: ./
+      dockerfile: ./docker/elasticsearch/Dockerfile
+    environment:
+      - node.name=botov_elasticsearch
+      - cluster.initial_master_nodes=botov_elasticsearch
+      - cluster.name=docker-cluster
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms1024m -Xmx1024m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - ./docker/elasticsearch/synonym.txt:/usr/share/elasticsearch/config/analysis/synonym.txt:ro
+    restart: always
+    ports:
+      - 9200:9200
+
+  botov_postgres:
+    container_name: botov_postgres
+    image: postgres
+    volumes:
+      - ./docker/postgres/data:/var/lib/postgresql/data
+    restart: always
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_PASSWORD: root
+
+  botov_kibana:
+    image: docker.elastic.co/kibana/kibana:7.4.0
+    container_name: botov_kibana
+    environment:
+      ELASTICSEARCH_HOSTS: http://botov_elasticsearch:9200
+    restart: always
+    ports:
+      - 5601:5601
+    depends_on:
+      - botov_elasticsearch
+
+  botov_redis:
+    container_name: botov_redis
+    image: redis:latest
+    volumes:
+      - ./docker/redis/data:/data
+    restart: always
+    ports:
+      - "6379:6379"
