@@ -4,6 +4,7 @@ from .response import BotResponse
 from vk_api.utils import get_random_id
 from project.bots.documents import RequestsDocument
 from project.bots.utils import is_chat
+from django.conf import settings
 
 
 class StatsResponse(BotResponse):
@@ -39,7 +40,7 @@ class StatsResponse(BotResponse):
         )
 
     def get_user_messages_count(self, peer_id, from_id):
-        client = Elasticsearch()
+        client = Elasticsearch(settings.ELASTICSEARCH_DSL['default']['hosts'])
 
         response = client.search(
             index=RequestsDocument().Index.name,
@@ -75,8 +76,7 @@ class StatsResponse(BotResponse):
         return str(response['hits']['total']['value'])
 
     def get_group_messages_count(self, peer_id):
-
-        client = Elasticsearch()
+        client = Elasticsearch(settings.ELASTICSEARCH_DSL['default']['hosts'])
 
         response = client.search(
             index=RequestsDocument().Index.name,
