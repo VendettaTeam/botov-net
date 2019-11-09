@@ -42,8 +42,8 @@ django-release-image:
     - docker pull $DJANGO_TEST_IMAGE
     - docker tag $DJANGO_TEST_IMAGE $DJANGO_RELEASE_IMAGE
     - docker push $DJANGO_RELEASE_IMAGE
-#  only:
-#    - master
+  only:
+    - master
 
 
 deploy:
@@ -63,5 +63,5 @@ deploy:
     - ssh ${DEPLOYMENT_USER}@${DEPLOYMENT_SERVER_IP} "bash -c 'cd ${PROJECT_PATH} && git fetch && git checkout ${CI_COMMIT_SHA:0:8}'"
     - ssh ${DEPLOYMENT_USER}@${DEPLOYMENT_SERVER_IP} "docker login -u ${CI_REGISTRY_USER} -p ${CI_REGISTRY_PASSWORD} ${CI_REGISTRY} && docker pull ${DJANGO_RELEASE_IMAGE}"
     - ssh ${DEPLOYMENT_USER}@${DEPLOYMENT_SERVER_IP} "docker login -u ${CI_REGISTRY_USER} -p ${CI_REGISTRY_PASSWORD} ${CI_REGISTRY} && docker-compose -f ${PROJECT_PATH}/docker-compose.prod.yml up -d"
-#only:
-    ##    - master
+  only:
+    - master
