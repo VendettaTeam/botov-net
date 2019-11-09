@@ -6,7 +6,7 @@ services:
     image: registry.gitlab.com/vtr0n/botov-net:DJANGO_latest
     command: "bash -c 'sleep 10 && ./manage.py migrate &&  ./manage.py search_index --rebuild -f && ./manage.py runserver 0.0.0.0:80'"
     env_file: .env
-    restart: always
+    restart: on-failure
     ports:
       - "80:80"
     depends_on:
@@ -41,7 +41,7 @@ services:
         hard: -1
     volumes:
       - ./docker/elasticsearch/synonym.txt:/usr/share/elasticsearch/config/analysis/synonym.txt:ro
-    restart: always
+    restart: on-failure
     ports:
       - 9200:9200
 
@@ -50,7 +50,7 @@ services:
     image: postgres
     volumes:
       - ./docker/postgres/data:/var/lib/postgresql/data
-    restart: always
+    restart: on-failure
     ports:
       - 5432:5432
     environment:
@@ -61,7 +61,7 @@ services:
     container_name: botov_kibana
     environment:
       ELASTICSEARCH_HOSTS: http://botov_elasticsearch:9200
-    restart: always
+    restart: on-failure
     ports:
       - 5601:5601
     depends_on:
@@ -72,6 +72,6 @@ services:
     image: redis:latest
     volumes:
       - ./docker/redis/data:/data
-    restart: always
+    restart: on-failure
     ports:
       - "6379:6379"
