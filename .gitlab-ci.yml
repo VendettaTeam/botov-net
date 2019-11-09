@@ -1,5 +1,6 @@
 stages:
   - build
+  - test
   - release
 
 variables:
@@ -17,6 +18,18 @@ django-build:
     - docker build --pull -t $DJANGO_TEST_IMAGE . -f docker/django/Dockerfile
     - docker push $DJANGO_TEST_IMAGE
 
+django-test:
+  stage: test
+  image: docker:stable
+  services:
+    - docker:stable-dind
+  before_script:
+    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
+  script:
+    - docker pull $DJANGO_TEST_IMAGE
+    - printenv | grep '^DJANGO_' > env.list
+    - docker run --env-file env.list $DJANGO_TEST_IMAGE ./manage.py test
+
 django-release-image:
   stage: release
   image: docker:stable
@@ -30,7 +43,8 @@ django-release-image:
     - docker push $DJANGO_RELEASE_IMAGE
   only:
     - master
-#
+
+
 #deploy:
 #  stage: deploy
 #  image: gitlab/dind:latest
