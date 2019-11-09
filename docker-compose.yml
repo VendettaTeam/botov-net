@@ -1,23 +1,50 @@
 version: '3.7'
 services:
+
+  botov_backend: &botov_backend
+    container_name: botov_backend_container
+    build:
+      context: ./
+      dockerfile: ./docker/django/Dockerfile
+    command: "bash -c './manage.py migrate &&  ./manage.py search_index --rebuild -f && ./manage.py runserver 0.0.0.0:8000'"
+    env_file:
+      - .env
+    volumes:
+      - ./project:/code/project
+    ports:
+      - "8000:8000"
+    depends_on:
+      - botov_celery
+      - botov_elasticsearch
+      - botov_postgres
+      - botov_redis
+
+  botov_celery:
+    container_name: botov_celery
+    <<: *botov_backend
+    command: "celery worker -A project.settings"
+    ports: []
+    depends_on:
+      - botov_redis
+      - botov_elasticsearch
+
   botov_elasticsearch:
     container_name: botov_elasticsearch
     build:
       context: ./
       dockerfile: ./docker/elasticsearch/Dockerfile
     environment:
-      - node.name=botov_elastic_search
-      - cluster.initial_master_nodes=botov_elastic_search
+      - node.name=botov_elasticsearch
+      - cluster.initial_master_nodes=botov_elasticsearch
       - cluster.name=docker-cluster
       - bootstrap.memory_lock=true
-      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - "ES_JAVA_OPTS=-Xms1024m -Xmx1024m"
     ulimits:
       memlock:
         soft: -1
         hard: -1
     volumes:
       - ./docker/elasticsearch/synonym.txt:/usr/share/elasticsearch/config/analysis/synonym.txt:ro
-#      - ./docker/elasticsearch/data:/usr/share/elasticsearch/data
     ports:
       - 9200:9200
 
