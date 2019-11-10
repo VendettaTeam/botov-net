@@ -26,6 +26,14 @@ class RequestInfo:
 
         return False
 
+    def is_chat_invite_user(self):
+        try:
+            if self.request['object']['action']['type'] == 'chat_invite_user':
+                return True
+        except:
+            pass
+        return False
+
     def _get_clean_message(self) -> str:
         """
         Return message without bots name

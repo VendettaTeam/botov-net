@@ -1,4 +1,4 @@
-import os, json, logging
+import json, logging
 from django.http import HttpResponse
 from django.http import HttpResponseServerError, HttpResponseNotAllowed
 from django.views.decorators.csrf import csrf_exempt
@@ -86,7 +86,7 @@ def hashmap_bot(request_info: RequestInfo):
 def elasticsearch_bot(request_info: RequestInfo):
     save_to_elastic.delay(request_info.request, request_info.bot_obj.pk)
 
-    if not request_info.is_appeal_to_bot():
+    if not request_info.is_appeal_to_bot() and not request_info.is_chat_invite_user():
         return
 
     analyser = ElasticAnalyser(request_info)

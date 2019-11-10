@@ -8,7 +8,13 @@ from project.bots.models import Messages
 
 class ElasticAnalyser(Analyser):
     def get_response(self) -> BotResponse:
-        elastic_resp = MessagesDocument.search().query("match", message=self.request_info.clean_message)
+        if self.request_info.is_chat_invite_user():
+            # TODO make this message more pretty
+            search_message = "помощь"
+        else:
+            search_message = self.request_info.clean_message
+
+        elastic_resp = MessagesDocument.search().query("match", message=search_message)
         elastic_resp = elastic_resp.to_queryset()
 
         # try to use first (more relevant) match
