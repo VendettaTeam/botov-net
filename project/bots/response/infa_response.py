@@ -63,11 +63,16 @@ class InfaResponse(BotResponse):
             "дунул с",
             "ударил",
             "пукнул на",
-        ]
-        infa_list_vip = [
             "подколол",
             "сел на лицо",
+            "отлизал",
+            "гулял",
+            "был на свидании",
+            "понюхал носки",
+            "отдал трусы",
+            "снял порно",
         ]
+        infa_list_vip = []
         if self.request_info.user_info.is_vip():
             infa_list += infa_list_vip
 
