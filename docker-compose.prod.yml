@@ -26,6 +26,15 @@ services:
       - botov_redis
       - botov_elasticsearch
 
+  botov_flower:
+    container_name: botov_flower
+    <<: *botov_backend
+    command: "celery -A project.settings flower"
+    ports:
+      - "2006:5555"
+    depends_on:
+      - botov_celery
+
   botov_elasticsearch:
     container_name: botov_elasticsearch
     build:
