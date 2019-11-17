@@ -1,3 +1,4 @@
 docker/postgres/data
 docker/redis/data
 docker/elasticsearch/data
+docker/speech/data

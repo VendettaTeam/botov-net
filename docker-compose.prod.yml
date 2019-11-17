@@ -6,9 +6,11 @@ services:
     image: registry.gitlab.com/vtr0n/botov-net:DJANGO_latest
     command: "bash -c 'sleep 10 && ./manage.py migrate &&  ./manage.py search_index --rebuild -f && ./manage.py runserver 0.0.0.0:80'"
     env_file: .env
+    volumes:
+      - ./docker/speech/data:/usr/share/RHVoice-data
     restart: on-failure
     ports:
-      - "80:80"
+      - "2000:80"
     depends_on:
       - botov_postgres
       - botov_elasticsearch
@@ -43,7 +45,7 @@ services:
       - ./docker/elasticsearch/synonym.txt:/usr/share/elasticsearch/config/analysis/synonym.txt:ro
     restart: on-failure
     ports:
-      - 9200:9200
+      - 2001:9200
 
   botov_postgres:
     container_name: botov_postgres
@@ -52,7 +54,7 @@ services:
       - ./docker/postgres/data:/var/lib/postgresql/data
     restart: on-failure
     ports:
-      - 5432:5432
+      - 2002:5432
     environment:
       POSTGRES_PASSWORD: root
 
@@ -63,7 +65,7 @@ services:
       ELASTICSEARCH_HOSTS: http://botov_elasticsearch:9200
     restart: on-failure
     ports:
-      - 5601:5601
+      - 2003:5601
     depends_on:
       - botov_elasticsearch
 
@@ -74,4 +76,16 @@ services:
       - ./docker/redis/data:/data
     restart: on-failure
     ports:
-      - "6379:6379"
+      - "2004:6379"
+
+  botov_speech_synthesis:
+    container_name: botov_speech_synthesis
+    command: python3 /code/speech/app.py
+    build:
+      context: ./
+      dockerfile: ./docker/speech/Dockerfile
+    volumes:
+      - ./docker/speech/data:/usr/share/RHVoice-data
+    restart: on-failure
+    ports:
+      - "2005:5000"

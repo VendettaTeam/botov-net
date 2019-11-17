@@ -2,6 +2,8 @@
 .idea
 # docker data
 docker/**/data/*
+# .gitkeep
+!.gitkeep
 
 # Created by .ignore support plugin (hsz.mobi)
 ### Python template
