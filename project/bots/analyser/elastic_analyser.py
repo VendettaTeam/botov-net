@@ -20,7 +20,9 @@ class ElasticAnalyser(Analyser):
         # TODO think about priority commands and text
         # first iterate over the first full occurrence
         for match in elastic_resp:
-            if search_message.startswith(match.message):
+            print(search_message.lower())
+            print(match.message.lower())
+            if search_message.lower().startswith(match.message.lower()):
                 bot_resp = self.return_response(match.id)
                 if bot_resp != False:
                     return bot_resp

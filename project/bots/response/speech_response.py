@@ -8,7 +8,7 @@ from vk_api.utils import get_random_id
 
 class SpeechResponse(BotResponse):
     def setup(self, *args, **kwargs):
-        self.message = self.request_info.clean_message
+        self.message = self.request_info.clean_message.lower()
         self.message = self.message.replace(kwargs['searched_message'], "", 1)
         self.message = self.message.strip(', ')
         if self.message == "":
