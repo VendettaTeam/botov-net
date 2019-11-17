@@ -19,6 +19,7 @@ django-extensions = "*"
 django-elasticsearch-dsl = "*"
 django-json-widget = "*"
 flask = "*"
+flower = "*"
 
 [requires]
 python_version = "3.7"
