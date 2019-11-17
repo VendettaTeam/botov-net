@@ -11,6 +11,7 @@ services:
       - .env
     volumes:
       - ./project:/code/project
+      - ./docker/speech/data:/usr/share/RHVoice-data
     restart: on-failure
     ports:
       - "8000:8000"
@@ -80,3 +81,15 @@ services:
     restart: on-failure
     ports:
       - "6379:6379"
+
+  botov_speech_synthesis:
+    container_name: botov_speech_synthesis
+    command: python3 /code/speech/app.py
+    build:
+      context: ./
+      dockerfile: ./docker/speech/Dockerfile
+    volumes:
+      - ./speech:/code/speech
+      - ./docker/speech/data:/usr/share/RHVoice-data
+    ports:
+      - "5000:5000"

@@ -1,10 +1,11 @@
-import vk_api, redis, json, os
+import vk_api, redis, json
 from celery import shared_task
 from datetime import datetime, date
 from .models import BotModel
 from .utils import is_chat
 from .request import RequestInfo
 from .documents import RequestsDocument
+from project.bots.analyser.elastic_analyser import ElasticAnalyser
 
 
 @shared_task()
@@ -40,6 +41,16 @@ def save_to_elastic(request_json, bot_obj_pk):
     except Exception as e:
         # TODO setup exception logging
         print(e)
+
+
+@shared_task()
+def elasticsearch_bot_response(request_json, bot_obj_pk):
+    bot_obj = BotModel.objects.get(pk=bot_obj_pk)
+    request_info = RequestInfo(request_json, bot_obj)
+
+    analyser = ElasticAnalyser(request_info)
+    bot_response = analyser.get_response()
+    bot_response.run()
 
 
 def get_user_info(request_info: RequestInfo):

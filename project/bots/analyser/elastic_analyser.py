@@ -9,7 +9,7 @@ from project.bots.models import Messages
 class ElasticAnalyser(Analyser):
     def get_response(self) -> BotResponse:
         if self.request_info.is_chat_invite_user():
-            # TODO make this message more pretty
+            # TODO delete hardcode
             search_message = "помощь"
         else:
             search_message = self.request_info.clean_message
@@ -23,6 +23,7 @@ class ElasticAnalyser(Analyser):
             try:
                 answer = Messages.objects.get(pk=match.id)
                 response_class, payload = ResponseAnswer.get_response_class(answer.answer)
+                payload['searched_message'] = answer.message
 
                 resp = response_class(self.request_info)
                 resp.setup(**payload)

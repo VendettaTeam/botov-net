@@ -5,10 +5,9 @@ from django.views.decorators.csrf import csrf_exempt
 from .models import BotModel
 from .decorators import vk_success_response
 from .request import RequestInfo
-from project.bots.tasks import save_to_elastic
+from project.bots.tasks import save_to_elastic, elasticsearch_bot_response
 from project.bots.analyser.echo_analyser import EchoAnalyser
 from project.bots.analyser.hashmap_analyser import HashMapAnalyser
-from project.bots.analyser.elastic_analyser import ElasticAnalyser
 from project.bots.analyser.nothing_analyser import NothingAnalyser
 
 logger = logging.getLogger(__name__)
@@ -89,9 +88,7 @@ def elasticsearch_bot(request_info: RequestInfo):
     if not request_info.is_appeal_to_bot() and not request_info.is_chat_invite_user():
         return
 
-    analyser = ElasticAnalyser(request_info)
-    bot_response = analyser.get_response()
-    bot_response.run()
+    elasticsearch_bot_response.delay(request_info.request, request_info.bot_obj.pk)
 
 
 @vk_success_response
