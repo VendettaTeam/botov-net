@@ -10,3 +10,6 @@ docker exec -it botov_backend_container bash
 ```
 #### Run in prod:
 Look at .gitlab-ci.yml
+
+#### Current Bots
+[Ботов Нет](https://vk.com/botof_net)
