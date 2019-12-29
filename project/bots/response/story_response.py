@@ -32,7 +32,7 @@ class StoryResponse(BotResponse):
             'User-Agent': 'vk-bot (https://github.com/VendettaTeam/botov-net)',
             'Content-Encoding': 'utf-8'}
         data = {
-            "prompt": "Как-то я зашел домой и увидел",
+            "prompt": self.message,
             "length": 60,
             "num_samples": 1
         }
