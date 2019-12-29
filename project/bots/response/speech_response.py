@@ -1,7 +1,6 @@
 import os
 import requests
 import vk_api
-import random
 from .response import BotResponse
 from vk_api.utils import get_random_id
 
@@ -34,7 +33,6 @@ class SpeechResponse(BotResponse):
                 doc = "doc{}_{}".format(audio_message['audio_message']['owner_id'],
                                         audio_message['audio_message']['id'])
                 vk.messages.send(
-                    # message="голос " + voice,
                     random_id=get_random_id(),
                     attachment=doc,
                     peer_id=self.request_info.request['object']['peer_id']
